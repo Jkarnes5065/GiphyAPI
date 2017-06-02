@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Feel Those Feels!</title>
+    <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+        margin: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Feel Those Feels!</h1>
+        <div id="buttons-view"></div>
+        <form id="gif-form">
+            <label for="gif-input">What are you feeling?</label>
+            <input type="text" id="gif-input">
+            <br>
+            <input id="add-gif" type="submit" value="I'm feelin it!">
+        </form>
+        <div id="gifs-view"></div>
+        <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript">
+        var gifs = [""];
+
+        function displayGifInfo() {
+
+            var gif = $(this).attr("data-name");
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + gif + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).done(function(response) {
+
+                var results = response.data;
+
+                for (var i = 0; i < results.length; i++) {
+
+                    var gifDiv = $("<div class='item'>");
+
+                    var rating = results[i].rating;
+
+                    var p = $("<p>").text("Rating: " + rating);
+
+                    var emotionImage = $("<img>");
+
+
+                    emotionImage.attr("src", results[i].images.fixed_height.url);
+
+
+                    gifDiv.append(p);
+                    gifDiv.append(emotionImage);
+
+
+                    $("#gifs-view").prepend(gifDiv);
+
+                }
+            });
+
+        }
+
+        function renderButtons() {
+
+
+            $("#buttons-view").empty();
+
+            for (var i = 0; i < gifs.length; i++) {
+
+
+                var a = $("<button>");
+                a.addClass("gif");
+                a.attr("data-name", gifs[i]);
+                a.text(gifs[i]);
+                $("#buttons-view").append(a);
+            }
+        }
+
+        $("#add-gif").on("click", function(event) {
+            event.preventDefault();
+            var gif = $("#gif-input").val().trim();
+
+            gifs.push(gif);
+
+            renderButtons();
+        });
+
+
+        $(document).on("click", ".gif", displayGifInfo);
+
+        renderButtons();
+        </script>
+    </div>
+</body>
+
+</html>
