@@ -27,7 +27,7 @@
         <div id="gifs-view"></div>
         <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script type="text/javascript">
-        var gifs = [""];
+        var gifs = [];
 
         function displayGifInfo() {
 
@@ -39,6 +39,7 @@
                 url: queryURL,
                 method: "GET"
             }).done(function(response) {
+                console.log(response);
 
                 var results = response.data;
 
@@ -50,10 +51,17 @@
 
                     var p = $("<p>").text("Rating: " + rating);
 
+                    var animated = results[i].images.fixed_height.url;
+                    var still = results[i].images.fixed_height_still.url;
+
                     var emotionImage = $("<img>");
 
 
-                    emotionImage.attr("src", results[i].images.fixed_height.url);
+                    emotionImage.attr("src", animated);
+                    emotionImage.attr("data-still", still);
+                    emotionImage.attr("data-animate", animated);
+                    emotionImage.attr("data-state", "animated");
+                    emotionImage.addClass("emotions-image");
 
 
                     gifDiv.append(p);
@@ -94,6 +102,19 @@
 
 
         $(document).on("click", ".gif", displayGifInfo);
+
+        $(".gif").on("click", function() {
+
+            var state = $(this).attr("data-state");
+
+            if (state === "animate") {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+            } else {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            }
+        });
 
         renderButtons();
         </script>
